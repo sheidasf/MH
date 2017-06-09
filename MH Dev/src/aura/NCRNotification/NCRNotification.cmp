@@ -1,0 +1,117 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    
+    <aura:attribute name="clientAccount" type="Account" default="{ 'sobjectType': 'Account' }"/>    
+    <aura:attribute name="MLISAccount" type="MLIS_Account__c" default="{ 'sobjectType': 'MLIS_Account__c' }"/>  
+    
+    <aura:attribute name="disableResFax" type="Boolean"/>
+    <aura:attribute name="disableResEmail" type="Boolean" />
+    <aura:attribute name="disableRegFax" type="Boolean"/>
+    <aura:attribute name="disableRegEmail" type="Boolean" />
+
+    
+    <aura:attribute name="practiceFaxNumber" type="String"/>
+    <aura:attribute name="currResFaxNumber" type="String" /> 
+    <aura:attribute name="currRegFaxNumber" type="String" /> 
+
+    <aura:attribute name="primaryEmailAddress" type="String"/>
+    <aura:attribute name="currResEmailAddress" type="String" /> 
+    <aura:attribute name="currRegEmailAddress" type="String" />     
+
+    <aura:method name="validateNotification" action="{!c.validate}" description="validate the notification info">
+     	<aura:attribute name="errorsParam" type="String[]" />  
+        <aura:attribute name="isValidParam" type="String" /> 
+        <aura:attribute name="validEmails" type="String[]" /> 
+    </aura:method> 
+    
+     <aura:method name="prepForSubmit" action="{!c.prepForSubmit}" description="Do any presubmit work">
+    </aura:method> 
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="c:NCRFaxChangedEvent" action="{!c.practiceFaxChanged}"/>
+    <aura:handler event="c:NCRPrimaryEmailChangedEvent" action="{!c.PrimaryEmailChanged}"/>
+    
+    <form class="slds-form--compound slds-box slds-theme--default slds-container--medium ">    
+        
+        <fieldset class="slds-box slds-form--compound slds-m-top--medium">
+            <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">Notification</legend>
+
+ 
+			<h3 class="slds-text-heading--label">Results Reports</h3>     
+            
+            <div class="slds-form-element__row">
+                <div class="slds-form-element__control slds-size--1-of-4 slds-m-top--medium">
+                    <lightning:input type="checkbox" aura:id="resFaxId"
+                                     label="Fax Results" name="resFaxName"
+                                     value="{!v.MLISAccount.Name}"
+                                     onchange="{!c.resFaxSelected}" />              
+                </div>
+                
+                
+                <div class="slds-form-element__control slds-size--3-of-4">
+                    <lightning:input name="resFaxNumberName" aura:id="resFaxNumberId" label="Fax Number" 
+                                     value="{!v.currResFaxNumber}"
+                                     pattern="[0-9]{10}" 
+                                     messageWhenPatternMismatch="Invalid Fax Number."
+                                     disabled="{!v.disableResFax}"/>          
+                </div>  
+            </div>     
+            
+            <div class="slds-form-element__row">                
+                <div class="slds-form-element__control slds-size--1-of-4 slds-m-top--medium">
+                    <lightning:input type="checkbox" aura:id="resEmailId"
+                                     label="Email Results" name="resEmailName"
+                                     value="{!v.MLISAccount.Name}"
+                                     onchange="{!c.resEmailSelected}"/>              
+                </div>
+                
+                
+                <div class="slds-form-element__control slds-size--3-of-4">
+                    <lightning:input name="resEmailAddrName" aura:id="resEmailAddrId" label="Email Address" 
+                                     value="{!v.currResEmailAddress}"
+                                     type="email" 
+                                     messageWhenPatternMismatch="Invalid Email Address"
+                                     disabled="{!v.disableResEmail}"/>          
+                </div>  
+            </div>    
+            
+            
+           <!-- Registration Notification -->
+			<h3 class="slds-text-heading--label slds-m-top--large">Registration</h3>                 
+            <div class="slds-form-element__row">                
+                <div class="slds-form-element__control slds-size--1-of-4 slds-m-top--medium">
+                    <lightning:input type="checkbox" aura:id="regFaxId"
+                                     label="Fax Registration" name="faxRegName"
+                                     value="{!v.clientAccount.unknown_custom_field}"
+                                     onchange="{!c.regFaxSelected}" />              
+                </div>
+                
+                
+                <div class="slds-form-element__control slds-size--3-of-4">
+                    <lightning:input name="regFaxNumberName" aura:id="regFaxNumberId" label="Fax Number" 
+                                     value="{!v.currRegFaxNumber}"
+                                     pattern="[0-9]{10}" 
+                                     messageWhenPatternMismatch="Invalid Fax Number."
+                                     disabled="{!v.disableRegFax}"/>          
+                </div>           
+            </div>     
+            
+            <div class="slds-form-element__row">
+                <div class="slds-form-element__control slds-size--1-of-4 slds-m-top--medium">
+                    <lightning:input type="checkbox" aura:id="regEmailId"
+                                     label="Email Registration" name="regEmailName"
+                                     value="{!v.clientAccount.unknown_custom_field}"
+                                     onchange="{!c.regEmailSelected}"/>              
+                </div>
+                                
+                <div class="slds-form-element__control slds-size--3-of-4">
+                    <lightning:input name="regEmailAddrName" aura:id="regEmailAddrId" label="Email Address" 
+                                     value="{!v.currRegEmailAddress}"
+                                     type="email" 
+                                     messageWhenPatternMismatch="Invalid Email Address."    
+                                     disabled="{!v.disableRegEmail}"/>          
+                </div>                 
+            </div>    
+        </fieldset>
+    </form>
+    
+</aura:component>

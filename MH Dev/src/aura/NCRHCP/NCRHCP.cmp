@@ -1,0 +1,84 @@
+<aura:component controller="NCRAccountController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    
+    <!-- TODO default contact here and make rquired-->
+    <aura:attribute name="newHCP" type="Contact" />     
+    <aura:attribute name="role" type="String" required="true" default="Primary" />
+    <aura:attribute name="HCPVarName" type="String" />
+    <aura:attribute name="HCPNum" type="String" />
+    <aura:attribute name="clientAccount" type="Account" default="{ 'sobjectType': 'Account' }"/>  
+    <aura:attribute name="disableOtherCreds" type="Boolean" default="false" />    
+    <aura:attribute name="credentialsOptions" type="List" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- TODO if has time to have the hcp do its own validation -->
+    <aura:method name="validateHCP" action="{!c.validate}" description="validate this HCP">
+        <aura:attribute name="errorsParam" type="String[]" />  
+        <aura:attribute name="isValidParam" type="String" />        
+        <aura:attribute name="HCP" type="Object" /> 
+    </aura:method> 
+    
+    
+    <fieldset class="slds-box slds-form--compound slds-theme--default slds-container--medium slds-m-top--large"> 
+        <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">{!v.role} Health Care Provider/Authorized Requestor </legend>
+        
+        <!-- Primary contact should be expanded, others collapsed -->
+        <lightning:buttonIcon class="{!v.HCPNum == '1' ? 'slds-hide' : '' }"
+                              iconName="utility:chevronright" size="small" 
+                              alternativeText="add Health Care Provider" onclick="{!c.toggleHCPPanel}"/>
+        
+        <!-- give this element a global id so it can be hidden/shown -->        
+        <div id="{!globalId + v.HCPNum}" class= "{!v.HCPNum == '1' ? '' : 'slds-hide' }">
+            
+            <div class="slds-form-element__row">                        
+                <div class="slds-form-element__control slds-size--2-of-6">             
+                    <lightning:input name="fnameName" aura:id="fnameId" label="First Name"
+                                     value="{!v.newHCP.FirstName}"
+                                     required="true"/>
+                </div>                 
+                <div class="slds-form-element__control slds-size--2-of-6">
+                    <lightning:input name="mnameName" aura:id="mnameId" label="Middle Name"
+                                     value="{!v.newHCP.MiddleName}"/>
+                </div>                     
+                <div class="slds-form-element__control slds-size--2-of-6">             
+                    <lightning:input name="lnameName" aura:id="lnameId" label="Last Name"
+                                     value="{!v.newHCP.LastName}"
+                                     required="true"/>
+                </div>                 
+            </div>       
+            
+            <div class="slds-form-element__row">                        
+                <div class="slds-form-element__control slds-size--2-of-6">             
+                    <lightning:select name="credName" aura:id="credId" label="Credentials"
+                                     onchange="{!c.credentialsChanged}"
+                                     required="true">
+                        <aura:iteration items="{!v.credentialsOptions}" var="item">
+                            <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>      
+                    
+                
+                <div class="slds-form-element__control slds-size--2-of-6">
+                    <lightning:input name="mnameName" aura:id="mnameId" label="Other Credentials"
+                                     disabled="{!v.disableOtherCreds}"
+                                     value="{!v.newHCP.Credentials__c}"/>
+                </div>          
+
+                <div class="slds-form-element__control slds-size--2-of-6">             
+                    <lightning:input name="NPIName" aura:id="NPIId" label="NPI"
+                                     value="{!v.newHCP.NPI_ID__c}"/>
+                </div>                 
+            </div> 
+            <div class="slds-form-element__row">  
+                    <div class="slds-form-element__control slds-size--1-of-1">
+                    <lightning:input type="checkbox" aura:id="signerId"
+                                     label="Signing the acknowledgment" name="signerName"
+                                     value="{!v.newHCP.Signer__c}"
+                                     onchange="{!c.signerChanged}" />              
+                </div>
+            </div>
+        </div>
+        
+    </fieldset>
+</aura:component>

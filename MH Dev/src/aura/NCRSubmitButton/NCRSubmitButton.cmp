@@ -1,0 +1,11 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" >
+	
+                <div class="slds-form-element slds-m-top--medium slds-is-required" >
+                <div class="slds-form-element__control slds-is-required">
+                    <ui:button label="Create Account" 
+                               class=".slds-button--brand .slds-button__icon--right "
+                               press="{!c.submitForm}"/>
+                </div>
+            </div>
+    
+</aura:component>

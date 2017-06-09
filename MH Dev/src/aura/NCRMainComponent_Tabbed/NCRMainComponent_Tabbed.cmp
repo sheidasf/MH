@@ -1,0 +1,54 @@
+<aura:component controller="NCRAccountController" implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" >
+    
+    <aura:attribute name="primaryContact" type="Contact"
+                    default="{ 'sobjectType': 'Contact',
+                             'FirstName': 'Sheida'}" 			/>   
+    <aura:attribute name="secondaryContact" type="Contact"  
+                    default="{ 'sobjectType': 'Contact',
+                             'FirstName': 'Aria'}" 			/>    
+    <aura:attribute name="clientAccount" type="Account" 
+                    default="{ 'sobjectType': 'Account',
+                             'Name': 'Hoag Hospital'}" />
+    <aura:attribute name="MLISAccount" type="Account" 
+                    default="{ 'sobjectType': 'Account',
+                             'Name': 'Hoag MLIS'}" 			/>
+    
+    
+    <aura:attribute name="errorMsgs" type="String[]" default="['no', 'errors']"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    
+    
+    <div class="slds-notify_container red slds-container--small" id="errorMsgId">           
+        <h3 class="red"> Please fix the following Errors:</h3> 
+        <aura:iteration items="{!v.errorMsgs}" var="e">
+            <li class="red"><ui:outputText value="{!e}"/></li>
+        </aura:iteration>        
+    </div>
+    
+<div class="slds-tabs--scoped">
+  <ul class="slds-tabs--scoped__nav" role="tablist">
+    <li class="slds-tabs--scoped__item slds-active" title="Account" role="presentation"><a class="slds-tabs--default__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-default-1" id="tab-default-1__item">Account</a></li>
+    <li class="slds-tabs--scoped__item" title="Contacts" role="presentation"><a class="slds-tabs--default__link" href="javascript:void(0);" role="tab" tabindex="1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item">Contacts</a></li>
+    <li class="slds-tabs--scoped__item" title="Acknowledgement" role="presentation"><a class="slds-tabs--default__link" href="javascript:void(0);" role="tab" tabindex="2" aria-selected="false" aria-controls="tab-default-3" id="tab-default-3__item">Acknowledgement</a></li>
+  </ul>
+
+</div>    
+      <div id="tab-default-2" class="slds-tabs--default__content slds-show" role="tabpanel" aria-labelledby="tab-default-2__item">
+
+        <c:NCRContactForm newContact="{!v.primaryContact}" role="Primary"/>
+        <c:NCRContactForm newContact="{!v.secondaryContact}" role="Secondary"/>          
+        <c:NCRNewContactButton />    
+</div>    
+  <div id="tab-default-1" class="slds-tabs--default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">    
+    <c:NCRAccountForm clientAccount="{!v.clientAccount}" MLISAccount="{!v.MLISAccount}" />
+</div>
+
+    
+    <div class="slds-form-element slds-m-top--medium slds-is-required" >
+        <div class="slds-form-element__control slds-is-required">
+            <ui:button label="Create Account" 
+                       class=".slds-button--brand .slds-button__icon--right "
+                       press="{!c.submitForm}"/>
+        </div>
+    </div>
+</aura:component>

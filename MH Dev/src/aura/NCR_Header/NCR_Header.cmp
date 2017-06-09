@@ -1,0 +1,12 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" >
+    
+    <div class="slds-page-header slds-container--medium" role="banner">
+        <div class="slds-grid">
+            <div class="slds-col slds-has-flexi-truncate">
+                <h1 class="slds-text-heading--medium slds-truncate" title="NCR Registration">New Client Registration</h1>
+            </div>
+        </div>   
+    </div>  
+    
+
+</aura:component>

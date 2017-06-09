@@ -1,0 +1,16 @@
+<aura:component description="PopupAlert">
+
+    <!-- HANDLE EVENTS -->
+    <aura:handler event="c:PopMessageEvent" action="{!c.handlePopMessage}"/>
+    <!-- / HANDLE EVENTS -->
+
+    <!-- ATTRIBUTES -->
+    <aura:attribute name="messages" type="Aura.Component[]" access="private"/>
+    <!-- / ATTRIBUTES -->
+
+    <!-- MESSAGING LOCATION -->
+    <div aura:id="messagesId">{!v.messages}</div>
+    <!-- / MESSAGING LOCATION -->
+
+    
+</aura:component>

@@ -1,0 +1,111 @@
+<aura:component controller="NCRAccountController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    
+    <!-- TODO default contact here and make rquired-->
+    <aura:attribute name="newContact" type="Contact" />     
+    <aura:attribute name="role" type="String" required="true" default="Primary" />
+    <aura:attribute name="ctVarName" type="String" />
+    <aura:attribute name="ctNum" type="String" />
+    <aura:attribute name="disablePermissions" type="Boolean" default="false" />
+    <aura:attribute name="permissionOptions" type="List" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:method name="validateContact" action="{!c.validate}" description="validate the contact info">
+        <aura:attribute name="errorsParam" type="String[]" />       
+        <aura:attribute name="cont" type="Object" /> 
+    </aura:method> 
+    
+    
+    <fieldset class="slds-box slds-form--compound slds-theme--default slds-container--medium slds-m-top--large"> 
+        <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">{!v.role} CONTACT</legend>
+        
+        <!-- Primary contact should be expanded, others collapsed -->
+        <lightning:buttonIcon class="{!v.ctNum == '1' ? 'slds-hide' : '' }"
+                              iconName="utility:chevronright" size="small" 
+                              alternativeText="add contact" onclick="{!c.showContactPanel}"/>
+        
+        <!-- give this element a global id so it can be hidden/shown -->        
+        <div id="{!globalId + v.ctNum}" class= "{!v.ctNum == '1' ? '' : 'slds-hide' }">
+            <div class="slds-form-element__row">                        
+                <div class="slds-form-element__control slds-size--1-of-2">             
+                    <lightning:input name="fnameName" aura:id="fnameId" label="Contact First Name"
+                                     value="{!v.newContact.FirstName}"
+                                     required="true"/>
+                </div> 
+                
+                <div class="slds-form-element__control slds-size--1-of-2">
+                    <lightning:input name="mnameName" aura:id="mnameId" label="Contact Middle Name"
+                                     value="{!v.newContact.MiddleName}"/>
+                </div> 
+            </div>
+            
+            
+            <div class="slds-form-element__row">                        
+                <div class="slds-form-element__control slds-size--1-of-2">             
+                    <lightning:input name="lnameName" aura:id="lnameId" label="Contact Last Name"
+                                     value="{!v.newContact.LastName}"
+                                     required="true"/>
+                </div> 
+                
+                <div class="slds-form-element__control slds-size--1-of-2">
+                    <lightning:input name="pnameName" aura:id="pnameId" label="Contact Preferred Name"
+                                     value="{!v.newContact.Preferred_name__c}"/>
+                </div> 
+            </div>
+            
+            <div class="slds-form-element__row">                    
+                <div class="slds-form-element__control slds-size--2-of-4">                        
+                    <lightning:input type="tel" name="telName" aura:id="phoneId" label="Phone" 
+                                     value="{!v.newContact.Phone}"
+                                     pattern="[0-9]{10}" 
+                                     messageWhenPatternMismatch="Invalid Phone Number."/>                        
+                </div>
+                
+                
+                <div class="slds-form-element__control slds-size--2-of-4">
+                    <lightning:input type="tel" name="cellName" aura:id="cellId" label="Mobile Phone" 
+                                     value="{!v.newContact.MobilePhone}"
+                                     pattern="[0-9]{10}" 
+                                     messageWhenPatternMismatch="Invalid Phone Number."/>      
+                </div>                
+            </div>  
+            
+            <div class="slds-form-element__row">
+                <div class="slds-form-element__control slds-size--1-of-4">
+                    <lightning:input name="titleName" aura:id="titleId" label="Contact Title"
+                                     value="{!v.newContact.Title}" />
+                </div> 
+                
+                <div class="slds-form-element__control slds-size--3-of-4">
+                    <lightning:input name="emailName" aura:id="emailId" label="Contact Email"
+                                     type="email" 
+                                     onblur="{!c.primaryEmailChanged}"
+                                     value="{!v.newContact.Email}" />
+                </div>                             
+            </div>  
+            
+            <div class="slds-form-element__row">
+                <div class="slds-form-element__control slds-size--1-of-4">
+                    <lightning:input type="checkbox" aura:id="onlineUserId"
+                                     label="Online user" name="onlineUserName"
+                                     value="{!v.newContact.Is_MLIS_User__c}"
+                                     onchange="{!c.onlineUserChanged}" />              
+                </div>
+                
+                <div class="slds-form-element__control slds-size--3-of-4">    
+                    
+                    <lightning:select name="permissionsName" aura:id="permissionsId" label="Permissions"    
+                                      onchange="{!c.permissionsChanged}" 
+                                      disabled="{!v.disablePermissions}">
+                        <aura:iteration items="{!v.permissionOptions}" var="item">
+                            <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+                        </aura:iteration>
+                    </lightning:select>     
+                    
+                </div>                        
+                
+            </div>       
+        </div>
+        
+    </fieldset>
+</aura:component>

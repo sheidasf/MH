@@ -1,0 +1,31 @@
+<aura:component controller="SSFAccountsController">
+    <ltng:require styles="/resource/SLDS/assets/styles/salesforce-lightning-design-system.min.css"/>
+    <aura:attribute name="accountlist" type="Account[]"/>
+    <aura:handler name="init" value="{!this}" action="{!c.getAccountlst}"/>
+    <table class="slds-table slds-table--bordered" style="width: 80%;border-right: 1px solid #d8dde6;border-left: 1px solid #d8dde6;margin-left: 2%;">
+        <thead>
+            <tr class="slds-text-heading--label">
+                <th class="slds-cell-shrink" scope="col"></th>
+                <th class="slds-truncate" scope="col">
+                    <span class="slds-truncate">Account Name</span></th>
+                <th scope="col">
+                    <span class="slds-truncate">Industry</span></th>
+                <th scope="col">
+                    <span class="slds-truncate">Phone</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.accountlist}" var="acc">
+                <tr class="slds-hint-parent">
+                    <th data-label="acc-name" role="row">
+</th>
+                    <th data-label="acc-name" role="row">
+                        <a href="#" class="slds-truncate">{!acc.Name}</a></th>
+                    <td data-label="industry">
+                        <a href="#" class="slds-truncate">{!acc.Industry}</a></td>
+                    <td data-label="industry">
+                        <a href="#" class="slds-truncate">{!acc.Phone}</a></td>
+                </tr>
+            </aura:iteration></tbody>
+    </table>
+</aura:component>

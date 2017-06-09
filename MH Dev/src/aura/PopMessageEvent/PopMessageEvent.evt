@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" description="PopMessageEvent">
+    <aura:attribute type="String" name="state"/>
+    <aura:attribute type="String" name="message"/>
+    <aura:attribute type="Boolean" name="clearAllMessages" default="false"/>
+    <aura:attribute type="Boolean" name="isSalesforce1" default="false"/>
+</aura:event>

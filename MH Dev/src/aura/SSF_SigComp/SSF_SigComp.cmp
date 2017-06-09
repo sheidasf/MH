@@ -1,0 +1,16 @@
+<!--
+ - Created by tyler.mowbrey on 6/1/2017.
+ -->
+
+<aura:component description="Signature">
+
+
+    <aura:attribute name="base64Image" type="String"/>
+
+    <div id="signature"></div>
+
+    <lightning:button name="submit" label="Submit" type="button" onclick="{!c.submitSignature}"/>
+    <lightning:button name="clear" label="Clear" type="button" onclick="{!c.clearSignature}"/>
+
+    <lightning:textarea name="outputText" label="Output Base64 From Image" aura:id="outputText"/>
+</aura:component>

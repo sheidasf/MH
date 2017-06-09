@@ -1,0 +1,88 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+
+
+    <!-- Component Init Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+    <!-- Attributes -->
+    <aura:attribute name="parentRecordId" type="Id"
+                    description="Record Id of the Host record (ie if this was a lookup on opp, the opp recid)"/>
+    <aura:attribute name="lookupAPIName" type="String" description="Name of the lookup field ie Borrower__c"/>
+    <aura:attribute name="sObjectAPIName" type="String" 
+                    description="The API name of the SObject to search"/>
+    <aura:attribute name="label" type="String" 
+                    description="The label to assign to the lookup, eg: Account"/>
+    <aura:attribute name="pluralLabel" type="String" 
+                    description="The plural label to assign to the lookup, eg: Accounts"/>
+    <aura:attribute name="recordId" type="Id" description="The current record Id to display"/>
+    <aura:attribute name="searchString" type="String" description="The search string to find." />
+    <aura:attribute name="required" type="Boolean" description="Set to true if this lookup is required" default="false"/>
+    <aura:attribute name="filter" type="String" required="false"
+                    description="SOSL filter string ie AccountId = '0014B000003Sz5s'"/>
+    <aura:attribute name="errors" type="List" required="false" description="used to add errors to the component" />
+
+
+    <aura:attribute name="callback" type="String" description="Call this to communicate results to parent"
+                    access="global"/>
+
+    <aura:method name="reInit" action="{!c.init}"
+                 description="Allows the lookup to be re-initalized">
+    </aura:method>
+
+    <!-- PRIVATE ATTRS -->
+    <aura:attribute name="matches" type="Account[]"
+                    description="The resulting Accounts returned by the Apex controller." access="private"/>
+
+    <div aura:id="lookup-div" class="slds-form-element slds-lookup" data-select="single" data-scope="single">
+        <label class="slds-form-element__label" for="lookup"><aura:if isTrue="{!v.required}"><abbr class="slds-required" title="required">*</abbr></aura:if> {!v.label}</label>
+        <div aura:id="lookup-form-element"
+             class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+            <lightning:icon iconName="utility:search" alternativeText="Search" size="xx-small"
+                            class="slds-input__icon slds-icon--xx-small slds-icon-text-default"/>
+            <ui:inputText aura:id="lookup" value="{!v.searchString}" class="slds-lookup__search-input slds-input"
+                          updateOn="keyup" keyup="{!c.search}" blur="{!c.handleBlur}"
+                          placeholder="{! 'Search ' + v.pluralLabel}" errors="{!v.errors}"/>
+
+            <!--This is the selected item-->
+            <div aura:id="lookup-pill" class="slds-pill-container slds-hide">
+                <span class="slds-pill slds-size--1-of-1">
+                    <span class="slds-icon_container slds-icon-standard-account slds-pill__icon_container">
+                        <span class="slds-assistive-text">{!v.lookupAPIName}</span>
+                    </span>
+
+                    <span class="slds-pill__label" title="">{!v.searchString}</span>
+                    <button class="slds-button slds-button--icon slds-pill__remove" onclick="{!c.clear}">
+                        <lightning:icon iconName="utility:close" alternativeText="Remove" class="slds-button__icon" size="xx-small"/>
+                        <span class="slds-assistive-text">Remove</span>
+                    </button>
+                </span>
+            </div>
+        </div>
+        <!-- This is the lookup list markup. Initially it's hidden -->
+        <div aura:id="lookuplist" class="slds-lookup__menu slds-hide" role="listbox">
+            <div aura:id="lookupinfo">
+                <a href="javascript:void(0);" class="slds-lookup__item-action slds-lookup__item-action--label">
+                    <lightning:icon iconName="utility:search" size="xx-small"
+                                    class="slds-icon slds-icon--xx-small slds-icon-text-default slds-m-right--x-small"/>
+                    <span class="slds-truncate">&quot;{!v.searchString}&quot; in {!v.pluralLabel}</span>
+                </a>
+            </div>
+            <ul aura:id="lookuplist-items" class="slds-lookup__list " role="presentation">
+                <aura:iteration items="{!v.matches}" var="match">
+                    <li>
+                        <a id="{!globalId + '_id_' + match.SObjectId}" role="option" onclick="{!c.select}"
+                           class="slds-lookup__item-action slds-media slds-media--center"
+                           title="{!match.SObjectLabel}">
+
+                            <div class="slds-media__body">
+                                <div class="slds-lookup__result-text">
+                                        {!match.SObjectLabel}
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </aura:iteration>
+            </ul>
+        </div>
+    </div>
+</aura:component>
