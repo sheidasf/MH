@@ -1,21 +1,18 @@
 ({
     validate : function (component, event) {
-        
+       
         var params = event.getParam('arguments');
         if (params) {
             var errors = params.errorsParam;
-            var isValid = params.isValidParam; 
             var validEmails = params.validEmails;
         } 
         debugger;
         // Make sure atleast one notification form is selected for both registration and results
         if (!component.get("v.currResFaxNumber") && !(component.get("v.currResEmailAddress"))) {
-            errors[errors.length] = 'Either Fax or Email must be filled out for Results Notification.\n';
-            isValid = "invalid";  
+            errors[errors.length] = 'Either "Fax" or "Email" must be provided for Results Notification.\n';
         }
         if (!component.get("v.currRegFaxNumber") && !(component.get("v.currRegEmailAddress"))) {
-            errors[errors.length] = 'Either Fax or Email must be filled out for Registration information to be sent.\n';
-            isValid = "invalid";  
+            errors[errors.length] = 'Either "Fax" or "Email" must be filled out for Registration information to be sent.\n';
         }
         
         //if email is selected for Results, Make sure that the results email notificaiton is one of the contact emails
@@ -29,11 +26,9 @@
                 }}
             
             if (!validEmail) {
-                errors[errors.length] = 'Results notification email address must be one of the contact emails.\n';
-                isValid = "invalid";             
+                errors[errors.length] = 'Results notification "Email" must be one of the contact emails.\n';             
             }
-        }
-        
+        }        
     },
     
     prepForSubmit : function (component) {

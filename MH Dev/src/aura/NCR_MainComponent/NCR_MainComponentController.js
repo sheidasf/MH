@@ -84,7 +84,7 @@
         // Validate before allowing to sign
         helper.clearErrors(component);        
         component.set("v.errorMsgs", []);        
-        //helper.validate(component);   
+        helper.validate(component);   
         
         var errors = component.get("v.errorMsgs");
         if (errors.length > 0) {           

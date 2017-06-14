@@ -19,7 +19,6 @@
 
     <aura:method name="validateNotification" action="{!c.validate}" description="validate the notification info">
      	<aura:attribute name="errorsParam" type="String[]" />  
-        <aura:attribute name="isValidParam" type="String" /> 
         <aura:attribute name="validEmails" type="String[]" /> 
     </aura:method> 
     

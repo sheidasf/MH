@@ -5,6 +5,7 @@
         component.set('v.disableSecondary', true);
         component.set('v.disableBillingType', true);
         component.set('v.disableAccountType', true);
+        component.set('v.sameAsBilling', false);
         component.set('v.clientAccount.Product_Combination__c', '');
         
 		helper.loadInitialPicklistValues (component, event);
@@ -99,7 +100,6 @@
 
     productTypeChanged: function(component, event) {
      
-        debugger;
         var act = component.get("v.clientAccount");
         var inputTestType = event.getSource();
         if (inputTestType.get("v.checked")) {
@@ -110,6 +110,21 @@
         }	
     },
     
+    sameAsBillingChanged: function(component, event, helper) {
+     
+        debugger;
+        var act = component.get("v.sameAsBilling");
+        var inputTestType = event.getSource();
+        if (inputTestType.get("v.checked")) {
+            helper.shippingSameAsBilling(component, event);    
+        } else {
+            var s = act.Product_Combination__c;
+            helper.clearShipping(component, event);    
+        }	
+    },
+    billingAddressChanged : function(component, event, helper) {
+         helper.billingAddressChanged(component, event);
+    },
     
     faxChanged: function(component, event) {
             var inputTestType = event.getSource();

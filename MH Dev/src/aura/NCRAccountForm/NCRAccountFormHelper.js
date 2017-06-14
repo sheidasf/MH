@@ -103,47 +103,39 @@
         var params = event.getParam('arguments');
         if (params) {
             var errors = params.errorsParam;
-            var isValid = params.isValidParam; 
         } 
         debugger;
         
         // check for all the right patterns 
-        if (! component.find("nameId").get("v.validity").valid) {
-            errors[errors.length] = 'Invalid Practice Name.\n';
-            isValid = "invalid";  
+        if (component.find("nameId").get("v.validity").valueMissing) {
+            errors[errors.length] = '"Practice Name" is required.\n'; 
+        } else if (! component.find("nameId").get("v.validity").valid) {
+            errors[errors.length] = '"Practice Name" can contain only letters, numbers, spaces, periods, hyphens, commas, underscores, forward slashes, and parentheses.\n';
         }
         
         if (! component.find("NPIId").get("v.validity").valid) {
-            errors[errors.length] = 'Invalid NPI number.\n';
-            isValid = "invalid";  
+            errors[errors.length] = 'Invalid NPI number.\n'; 
         }         
         if (! component.find("line1Id").get("v.validity").valid) {
-            errors[errors.length] = 'Address is required.\n';
-            isValid = "invalid";  
+            errors[errors.length] = '"Address Line 1" is required.\n'; 
         }   
         if (! component.find("cityId").get("v.validity").valid) {
-            errors[errors.length] = 'City is required.\n';
-            isValid = "invalid";  
+            errors[errors.length] = '"City" is required.\n'; 
         }   
         if (! component.find("stateId").get("v.validity").valid) {
-            errors[errors.length] = 'State is required.\n';
-            isValid = "invalid";  
+            errors[errors.length] = '"State" is required.\n';  
         }   
         if (! component.find("zipId").get("v.validity").valid) {
-            errors[errors.length] = 'Invalid or missing zip code.\n';
-            isValid = "invalid";  
+            errors[errors.length] = '"Zip Code" is required and must be 5 or 9 digits.\n';  
         }   
         if (! component.find("phoneId").get("v.validity").valid) {
-            errors[errors.length] = 'Invalid or missing phone number.\n';
-            isValid = "invalid";  
+            errors[errors.length] = '"Main Phone" is required and must be 10 digits.\n'; 
         }   
         if (! component.find("faxId").get("v.validity").valid) {
-            errors[errors.length] = 'Invalid or missing fax number.\n';
-            isValid = "invalid";  
+            errors[errors.length] = '"Main Fax" is required and must be 10 digits.\n';  
         }  
         if (! component.find("cliaId").get("v.validity").valid) {
-            errors[errors.length] = 'Invalid CLIA id.\n';
-            isValid = "invalid";  
+            errors[errors.length] = 'CLIA Number" is in incorrect format.\n' 
         }   
         
         // now test the drop downs
@@ -152,18 +144,15 @@
         var billingType = component.get("v.MLISAccount.Billing_Type__c") ;        
         
         if (testingPurpose == '--None--' || !testingPurpose) {
-            errors[errors.length] = 'Testing purpose is required.\n';
-            isValid = "invalid";            
+            errors[errors.length] = '"Testing purpose" is required.\n';      
         }
         
         if (actType == '--None--' || !actType) {
-            errors[errors.length] = 'Account Type is required.\n';
-            isValid = "invalid";            
+            errors[errors.length] = '"Account Type" is required.\n';          
         }
         
         if (billingType == '--None--' || !billingType) {
-            errors[errors.length] = 'Billing Type is required.\n';
-            isValid = "invalid";            
+            errors[errors.length] = '"Billing Type" is required.\n';         
         }
         
         var ps = component.find("pspecialityId").get("v.value");  
@@ -171,21 +160,44 @@
         
         if (testingPurpose == 'Medical'  && 
             (ps == '--None--' || !ps)) {
-            errors[errors.length] = 'Primary Specialty is required for Medical practices.\n';
-            isValid = "invalid";
+            errors[errors.length] = '"Primary Specialty" is required for Medical practices.\n';
         }                 
         
         if (ps != '--None--' && ps && ps!='') {            
             if (ps  == ss) {                    
-                errors[errors.length] = 'Primary Specialty must be different than Secondary Speciality.\n';
-                isValid = "invalid";
+                errors[errors.length] = '"Primary Specialty" must be different than "Secondary Speciality".\n';
             }
         }
         
         // validate that at least one testing type has been selected.
         if(!component.get("v.clientAccount.Product_Combination__c")) {
-            errors[errors.length] = 'At least one testing type must be selected.\n';
-            isValid = "invalid";
+            errors[errors.length] = 'At least one "Testing Type" must be selected.\n';
+        }
+    },
+    shippingSameAsBilling: function (component, event){
+        debugger;
+        component.set("v.sameAsBilling", true); 
+        component.find("sLine1Id").set("v.value", component.find("line1Id").get("v.value"));
+        component.find("sCityId").set("v.value", component.find("cityId").get("v.value"));
+        component.find("sStateId").set("v.value", component.find("stateId").get("v.value"));
+        component.find("sZipId").set("v.value", component.find("zipId").get("v.value"));
+    },
+    
+    clearShipping: function (component, event){
+        component.set("v.sameAsBilling", false); 
+        component.find("sLine1Id").set("v.value", "");
+        component.find("sCityId").set("v.value", "");
+        component.find("sStateId").set("v.value","");
+        component.find("sZipId").set("v.value", "");
+    },
+    billingAddressChanged: function (component, event){
+        if (component.get("v.sameAsBilling")) {
+            component.find("sLine1Id").set("v.value", component.find("line1Id").get("v.value"));
+            component.find("sCityId").set("v.value", component.find("cityId").get("v.value"));
+            component.find("sStateId").set("v.value", component.find("stateId").get("v.value"));
+            component.find("sZipId").set("v.value", component.find("zipId").get("v.value"));
         }
     }
+    
+    
 })

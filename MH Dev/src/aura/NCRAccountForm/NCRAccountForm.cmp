@@ -13,13 +13,14 @@
     <aura:attribute name="disableSecondary" type="Boolean" />
     <aura:attribute name="disableBillingType" type="Boolean" />
     <aura:attribute name="disableAccountType" type="Boolean" />    
+    <aura:attribute name="sameAsBilling" type="Boolean" />
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     
     <aura:method name="validateAct" action="{!c.validate}" description="validate the account info">
-     	<aura:attribute name="errorsParam" type="String[]" />  
+        <aura:attribute name="errorsParam" type="String[]" />  
     </aura:method> 
-
+    
     <!-- CREATE NEW NCR FORM -->
     
     <form class="slds-form--compound slds-box slds-theme--default slds-container--medium ">
@@ -29,7 +30,7 @@
             <div class="slds-form-element__control slds-size--3-of-4">
                 <lightning:input name="practiceName" aura:id="nameId" label="Practice Name" 
                                  value="{!v.clientAccount.Name}"
-                                 required="true" pattern="^[a-zA-Z\-0-9)(_.s,/ ]*$"
+                                 required="true" pattern="[a-zA-Z0-9 .\-,_/()]*"
                                  messageWhenPatternMismatch="Invalid Practice Name"/>           
             </div>  
             
@@ -38,7 +39,7 @@
                 <lightning:input name="NPIname" aura:id="NPIId" label="NPI" 
                                  value="{!v.clientAccount.NPI__c}"
                                  pattern="[0-9]{10}"
-                                 messageWhenPatternMismatch="Invalid NPI Number"/>           
+                                 messageWhenPatternMismatch="Invalid NPI Number. NPI number should be 10 digits."/>           
             </div>  
             
         </div>
@@ -49,42 +50,99 @@
             <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">Address/Phone</legend>
             <div class="slds-form-element__group">
                 
-                <div class="slds-form-element__row">
-                    <div class="slds-form-element">
-                        <div class="slds-form-element__control slds-size--1-of-1">
-                            <lightning:input name="line1Name" aura:id="line1Id" label="Address Line 1"
-                                             value="{!v.clientAccount.BillingStreet}"
-                                             required="true"/>
+                <fieldset class="slds-box slds-form--compound slds-m-top--medium">
+                    <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">Billing Address</legend>
+                    
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control slds-size--1-of-1">
+                                <lightning:input name="line1Name" aura:id="line1Id" label="Address Line 1"
+                                                 value="{!v.clientAccount.BillingStreet}"
+                                                 onchange="{!c.billingAddressChanged}"  
+                                                 required="true"/>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    
+                    <div class="slds-form-element__row">                    
+                        <div class="slds-form-element__control slds-size--2-of-4">
+                            <lightning:input name="cityName" aura:id="cityId" label="City"
+                                             value="{!v.clientAccount.BillingCity}"
+                                             onchange="{!c.billingAddressChanged}"  
+                                             required="true"/>
+                        </div>                     
+                        <div class="slds-form-element__control slds-size--1-of-4">
+                            <lightning:input name="stateName" aura:id="stateId" label="State"
+                                             value="{!v.clientAccount.BillingStateCode}"
+                                             onchange="{!c.billingAddressChanged}"  
+                                             required="true"/>
+                            
+                        </div>                    
+                        <div class="slds-form-element__control slds-size--1-of-4">
+                            <lightning:input name="zipName" aura:id="zipId" label="Zip Code"
+                                             value="{!v.clientAccount.BillingPostalCode}"
+                                             required="true" pattern="[0-9]{5}|[0-9]{9}"
+                                             onchange="{!c.billingAddressChanged}"  
+                                             messageWhenPatternMismatch="Invalid Zip Code: either 5 or 9 digits zip codes are allowed"/>  
+                        </div> 
+                    </div>
+                </fieldset>
                 
-                <div class="slds-form-element__row">                    
-                    <div class="slds-form-element__control slds-size--2-of-4">
-                        <lightning:input name="cityName" aura:id="cityId" label="City"
-                                         value="{!v.clientAccount.BillingCity}"
-                                         required="true"/>
-                    </div>                     
-                    <div class="slds-form-element__control slds-size--1-of-4">
-                        <lightning:input name="stateName" aura:id="stateId" label="State"
-                                         value="{!v.clientAccount.BillingStateCode}"
-                                         required="true"/>
-                        
-                    </div>                    
-                    <div class="slds-form-element__control slds-size--1-of-4">
-                        <lightning:input name="zipName" aura:id="zipId" label="Zip Code"
-                                         value="{!v.clientAccount.BillingPostalCode}"
-                                         required="true" pattern="^\d{5}(?:[-]\d{4})?$"
-                                         messageWhenPatternMismatch="Invalid Zip Code"/>  
-                    </div> 
-                </div>
+                
+                <fieldset class="slds-box slds-form--compound slds-m-top--medium">
+                    <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">Shipping Address</legend>
+                    
+                    
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element__control slds-size--1-of-4">
+                            <lightning:input type="checkbox" aura:id="sameAsBillingId"
+                                             label="Same As Billing" name="sameAsBillingName"
+                                             value="{!v.sameAsBilling}"
+                                             onchange="{!c.sameAsBillingChanged}" />              
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control slds-size--1-of-1">
+                                <lightning:input name="sLine1Name" aura:id="sLine1Id" label="Address Line 1"
+                                                 value="{!v.clientAccount.ShippingStreet}"
+                                                 disabled="{!v.sameAsBilling}"
+                                                 />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form-element__row">                    
+                        <div class="slds-form-element__control slds-size--2-of-4">
+                            <lightning:input name="sCityName" aura:id="sCityId" label="City"
+                                             value="{!v.clientAccount.ShippingCity}"
+                                             disabled="{!v.sameAsBilling}" 
+                                             />
+                        </div>                     
+                        <div class="slds-form-element__control slds-size--1-of-4">
+                            <lightning:input name="sStateName" aura:id="sStateId" label="State"
+                                             value="{!v.clientAccount.ShippingStateCode}"
+                                             disabled="{!v.sameAsBilling}"  
+                                             />
+                            
+                        </div>                    
+                        <div class="slds-form-element__control slds-size--1-of-4">
+                            <lightning:input name="sZipName" aura:id="sZipId" label="Zip Code"
+                                             value="{!v.clientAccount.ShippingPostalCode}"
+                                             required="true" pattern="[0-9]{5}|[0-9]{9}"
+                                             disabled="{!v.sameAsBilling}"  
+                                             messageWhenPatternMismatch="Invalid Zip Code: either 5 or 9 digits zip codes are allowed"/>  
+                        </div> 
+                    </div>
+                </fieldset>
                 
                 <div class="slds-form-element__row">                    
                     <div class="slds-form-element__control slds-size--2-of-4">                        
                         <lightning:input type="tel" name="telName" aura:id="phoneId" label="Main Telephone" 
                                          value="{!v.clientAccount.Phone}"
                                          required="true" pattern="[0-9]{10}" 
-                                         messageWhenPatternMismatch="Invalid Phone Number."/>                        
+                                         messageWhenPatternMismatch="Invalid Phone Number. Phone numbers should be 10 digits."/>                        
                     </div>
                     
                     
@@ -93,14 +151,14 @@
                                          value="{!v.clientAccount.Fax}"
                                          onblur="{!c.faxChanged}"
                                          required="true" pattern="[0-9]{10}" 
-                                         messageWhenPatternMismatch="Invalid Fax Number."/>      
+                                         messageWhenPatternMismatch="Invalid Fax Number.Fax numbers should be 10 digits."/>      
                     </div>
                     
                 </div>                    
             </div>            
         </fieldset>  
         
-
+        
         <!-- Practice Information Fieldset -->
         <fieldset class="slds-box slds-form--compound slds-m-top--medium" > 
             <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">Practice Information</legend>            
@@ -159,15 +217,15 @@
                     </div> 
                     
                 </div>
-
-
+                
+                
                 
                 <div class="slds-form-element__row">     
                     <div class="slds-form-element slds-size--2-of-4">                    
                         <div class="slds-form-element__control">
                             
                             <lightning:select name="pspecialityName" aura:id="pspecialityId" label="Primary Specialty"    
-                                               onchange="{!c.primarySpecialityChanged}" >
+                                              onchange="{!c.primarySpecialityChanged}" >
                                 <aura:iteration items="{!v.pSpecialityOptions}" var="item">
                                     <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
                                 </aura:iteration>
@@ -179,7 +237,7 @@
                         <div class="slds-form-element__control ">
                             
                             <lightning:select name="sspecialityName" aura:id="sspecialityId" label="Secondary Specialty"    
-                                               disabled="{!v.disableSecondary}" onchange="{!c.secondarySpecialityChanged}" >
+                                              disabled="{!v.disableSecondary}" onchange="{!c.secondarySpecialityChanged}" >
                                 <aura:iteration items="{!v.sSpecialityOptions}" var="item">
                                     <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
                                 </aura:iteration>
@@ -188,17 +246,17 @@
                         </div>                     
                     </div>                     
                 </div>
-
-        <fieldset class="slds-box slds-form--compound slds-m-top--medium">
-            <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">Testing Types</legend>
-            
-            <div class="slds-form-element__row">                     
-                	<aura:iteration items="{!v.ProductComboOptions}" var="item">
-                        <lightning:input type="checkbox" label="{!item.label}" 
-                             onchange="{!c.productTypeChanged}" name="{!item.value}" aura:id="{!item.label}"/>                        
-                    </aura:iteration>
-                </div>
-            
+                
+                <fieldset class="slds-box slds-form--compound slds-m-top--medium">
+                    <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">Testing Types</legend>
+                    
+                    <div class="slds-form-element__row">                     
+                        <aura:iteration items="{!v.ProductComboOptions}" var="item">
+                            <lightning:input type="checkbox" label="{!item.label}" 
+                                             onchange="{!c.productTypeChanged}" name="{!item.value}" aura:id="{!item.label}"/>                        
+                        </aura:iteration>
+                    </div>
+                    
                 </fieldset>                
             </div>   
         </fieldset>        

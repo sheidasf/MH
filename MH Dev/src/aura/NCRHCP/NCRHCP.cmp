@@ -33,15 +33,21 @@
             <div class="slds-form-element__row">                        
                 <div class="slds-form-element__control slds-size--2-of-6">             
                     <lightning:input name="fnameName" aura:id="fnameId" label="First Name"
+                                     pattern="[a-zA-Z .\-,_/\()']*"
+                                     messageWhenPatternMismatch="First Name can contain only letters, spaces, periods, hyphens, commas, underscores, forward slashes, backward slashes, parentheses, apostrophes and quotation marks"
                                      value="{!v.newHCP.FirstName}"
                                      required="true"/>
                 </div>                 
                 <div class="slds-form-element__control slds-size--2-of-6">
                     <lightning:input name="mnameName" aura:id="mnameId" label="Middle Name"
+                                     pattern="[a-zA-Z .\-,_/\()']*"
+                                     messageWhenPatternMismatch="Middle Name can contain only letters, spaces, periods, hyphens, commas, underscores, forward slashes, backward slashes, parentheses, apostrophes and quotation marks"
                                      value="{!v.newHCP.MiddleName}"/>
                 </div>                     
                 <div class="slds-form-element__control slds-size--2-of-6">             
                     <lightning:input name="lnameName" aura:id="lnameId" label="Last Name"
+                                     pattern="[a-zA-Z .\-,_/\()']*"
+                                     messageWhenPatternMismatch="Last Name can contain only letters, spaces, periods, hyphens, commas, underscores, forward slashes, backward slashes, parentheses, apostrophes and quotation marks"
                                      value="{!v.newHCP.LastName}"
                                      required="true"/>
                 </div>                 

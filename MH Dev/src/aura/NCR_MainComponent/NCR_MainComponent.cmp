@@ -65,12 +65,12 @@
         <c:NCRAccountForm aura:id="accountCompId" clientAccount="{!v.clientAccount}" MLISAccount="{!v.MLISAccount}"  />    
         
         <c:NCRContactForm newContact="{!v.contacts[0]}" role="Primary" ctNum="1" ctVarName="primaryContact"/>    
-        <c:NCRContactForm newContact="{!v.contacts[1]}" role="Second" ctNum="2" ctVarName="secondaryContact"/>   
-        <c:NCRContactForm newContact="{!v.contacts[2]}" role="Next" ctNum="3" ctVarName="contact3"/>   
-        <c:NCRContactForm newContact="{!v.contacts[3]}" role="Last" ctNum="4" ctVarName="contact4"/>       
+        <c:NCRContactForm newContact="{!v.contacts[1]}" role="Secondary" ctNum="2" ctVarName="secondaryContact"/>   
+        <c:NCRContactForm newContact="{!v.contacts[2]}" role="Additional" ctNum="3" ctVarName="contact3"/>   
+        <c:NCRContactForm newContact="{!v.contacts[3]}" role="Additional" ctNum="4" ctVarName="contact4"/>       
         <c:NCRNotification aura:id="NotificationCompId" clientAccount="{!v.clientAccount}" MLISAccount="{!v.MLISAccount}"  />     
         <c:NCRHCP clientAccount="{!v.clientAccount}" newHCP="{!v.HCPs[0]}" role="Primary" HCPNum="1"/>   
-        <c:NCRHCP clientAccount="{!v.clientAccount}" newHCP="{!v.HCPs[1]}" role="Additional" HCPNum="2"/>   
+        <c:NCRHCP clientAccount="{!v.clientAccount}" newHCP="{!v.HCPs[1]}" role="Secondary" HCPNum="2"/>   
         <c:NCRHCP clientAccount="{!v.clientAccount}" newHCP="{!v.HCPs[2]}" role="Additional" HCPNum="3"/>   
         <c:NCRHCP clientAccount="{!v.clientAccount}" newHCP="{!v.HCPs[3]}" role="Additional" HCPNum="4"/>  
         

@@ -1,6 +1,6 @@
 ({
     doInit : function(component, event, helper) {   
-        // initialize variables
+        // initialize variables for Notification
         component.set('v.disableResFax', true);
         component.set('v.disableResEmail', true);
         component.set('v.disableRegFax', true);
