@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="This event is fired when the account information is loaded" >
+	<aura:attribute name="existingClientAccount" type="Account" />
+</aura:event>

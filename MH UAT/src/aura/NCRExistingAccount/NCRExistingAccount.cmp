@@ -1,0 +1,106 @@
+<aura:component controller="NCRAccountController" implements="force:LightningQuickAction,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    
+    <!-- Changed by JS -->
+    <!--
+    <aura:attribute name="contacts" type="Contact[]" default="[{'sobjectType': 'Contact'}]"/>
+     <aura:attribute name="userPermissions" type="User_Permissions__c[]" default="[{'sobjectType': 'User_Permissions__c'}]" /> 
+-->
+    <aura:attribute name="existingcontacts" type="Contact[]" default="[{'sobjectType': 'Contact'}]"/>
+    <aura:attribute name="showexistingcontacts" type="Boolean" default="False"/>  
+    <aura:attribute name="isProspectAccount" type="Boolean" default="False"/>  
+    <aura:attribute name="isClientAccount" type="Boolean" default="False"/>  
+    <aura:attribute name="isNewAccount" type="Boolean" default="True"/>
+    <!-- this object will be of type NCR_HCPContact apex class -->
+    <aura:attribute name="HCPContacts" type="Object[]" />
+    <aura:attribute name="contactPerms" type="List" />
+    
+    <aura:attribute name="clientAccount" type="Account" default="{ 'sobjectType': 'Account' }" />
+    <aura:attribute name="MLISAccount" type="MLIS_Account__c" default="{ 'sobjectType': 'MLIS_Account__c'}" />
+    <aura:attribute name="signerContactNumber" type="Integer" />
+    <aura:attribute name="errorMsgs" type="List"/>
+    <aura:attribute name="globalError" type="String"/>
+    <aura:attribute name="NCRsettings" type="NCR_Setting__c" default="{'sobjectType': 'NCR_Setting__c' }"/>
+    <aura:attribute name="existingAccount" type="Boolean" default="false" />   
+    <aura:attribute name="isSalesforce1" type="Boolean" /> 
+    <aura:attribute name="disableSubmit" type="Boolean" />
+    <aura:attribute name="isSigned" type="Boolean"/>    
+    <aura:attribute name="base64Image" type="String"/>    
+    <aura:attribute name="signatureRequired" type="Boolean"/> 
+    <aura:attribute name="validState" type="Boolean" default="true"/>    
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    <aura:registerEvent name="PopMessageEvent" type="c:PopMessageEvent"/>
+    <aura:registerEvent name="accountInfoLoaded " type="c:NCRExistingAccountLoadedEvent" />    
+    
+    <ui:scrollerWrapper aura:id="scroller" class="scrollerSize">
+        
+        <lightning:spinner aura:id="mySpinner" variant="brand" size="large" class="slds-hide" alternativeText="Creating a new Client Account"/>
+        
+        <!-- this element is only here for 'focusing' when error happens -->        
+        <p id="topelement" /> 
+        <lightning:buttonIcon aura:id="focusId"
+                              variant="brand"
+                              alternativeText="Close"
+                              iconName="utility:salesforce1"/>
+        
+        <!-- these are the pop ups that need to be included -->
+        <c:PopupAlert />        
+        
+        
+        <aura:if isTrue="{! v.signatureRequired}">
+            <c:NCRAckAndSign isSalesforce1="{!v.isSalesforce1}" isSigned="{!v.isSigned}" base64Image="{!v.base64Image}"/> 
+        </aura:if>
+        
+ <!--       <lightning:buttonIcon iconName="utility:close" onclick="{! c.gotoURL }" variant="bare" alternativeText="Settings" iconClass="dark"/> 
+   -->     
+        
+        <c:NCRAccountFormV2 aura:id="accountCompId" clientAccount="{!v.clientAccount}" 
+                            MLISAccount="{!v.MLISAccount}" newAccount="false" isReadOnly="{!v.isClientAccount}"/>    
+        
+        
+        <aura:iteration items="{!v.contactPerms}" var="contact" indexVar="indexVar">
+            <c:NCRContactHCPForm newContact="{!contact.key}" existingcontact="{!v.existingcontacts}" showExistingContacts="{!v.showexistingcontacts}" 
+                                 role="{!'Contact'+indexVar}" ctNum="{!indexVar + 1}" permission="{!contact.value}"
+                                 isProspectAccount="{!v.isProspectAccount}" act="{!v.clientAccount}"
+                                 /> 
+            
+        </aura:iteration>
+        
+        
+        <lightning:button label="Add Contact" 
+                          variant="brand"
+                          onclick="{!c.addMoreContacts}"/>
+        <!-- Changed by JS Ends -->
+        
+        <c:NCRNotification aura:id="NotificationCompId" clientAccount="{!v.clientAccount}" MLISAccount="{!v.MLISAccount}"  /> 
+        
+        <div class="slds-form-element slds-hidden slds-m-left--medium slds-m-bottom--medium "  aura:id="signId" >
+            <div class="slds-form-element__control">
+                <lightning:button label="Continue to Sign" 
+                                  variant="brand"
+                                  onclick="{!c.acknowledgeAndSign}"/>
+            </div>
+        </div>
+        
+        <div class="slds-form-element slds-m-left--medium slds-m-bottom--medium " >
+            <div class="slds-form-element__control">
+                <lightning:button label="Create Account" 
+                                  disabled="{! (v.signatureRequired &amp;&amp; !v.isSigned) || !v.validState}"
+                                  variant="brand"
+                                  onclick="{!c.submitForm}"/>
+            </div>
+            
+            <div class="slds-form-element__control slds-size--4-of-4 slds-m-top_medium slds-m-bottom_xx-large">
+                <lightning:input type="checkbox" aura:id="urgentId"
+                                 label="{!$Label.c.NCR_UrgentRequest}" name="urgentName"
+                                 value="{!v.clientAccount.IsUrgentProcessing__c}"
+                                 checked="{!v.clientAccount.IsUrgentProcessing__c}"
+                                 disabled="{! (v.signatureRequired &amp;&amp; !v.isSigned) || !v.validState}"
+                                 />              
+            </div>
+            
+        </div>
+        
+    </ui:scrollerWrapper>
+</aura:component>

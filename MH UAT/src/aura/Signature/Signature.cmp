@@ -1,0 +1,21 @@
+<!--
+ - Created by tyler.mowbrey on 6/1/2017.
+ -->
+
+<aura:component description="Signature" implements="force:appHostable,flexipage:availableForAllPageTypes" access="global">
+    <ltng:require scripts="{!join(',',
+                          $Resource.Slalom_Resources + '/js/jquery-3.2.1.min.js',
+                          $Resource.Slalom_Resources + '/js/jSignature.min.js')
+                          }"
+                  afterScriptsLoaded="{!c.onInit}"
+    />
+
+    <aura:attribute name="base64Image" type="String"/>
+
+    <div id="signature"></div>
+
+    <lightning:button name="submit" label="Submit" type="button" onclick="{!c.submitSignature}"/>
+    <lightning:button name="clear" label="Clear" type="button" onclick="{!c.clearSignature}"/>
+
+    <lightning:textarea name="outputText" label="Output Base64 From Image" aura:id="outputText"/>
+</aura:component>

@@ -1,0 +1,43 @@
+<aura:component controller="NCRAccountController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    
+    <aura:attribute name="clientAccount" type="Account" 
+                    default="{ 'sobjectType': 'Account'
+                             }" />
+    <aura:attribute name="existingAct" type="Boolean" />
+    <aura:attribute name="searchName" type="String" />
+    
+    <aura:registerEvent name="PopMessageEvent" type="c:PopMessageEvent"/>
+    
+    <fieldset class="slds-box slds-form--compound slds-container--medium"> 
+        <legend class="slds-form-element__legend slds-form-element__label slds-text-title--caps">Search</legend>
+        <div class="slds-form-element__group"> 
+            
+            <div class="slds-form-element__row">  
+                
+                <div class="slds-form-element__control slds-size--3-of-4">               
+                    <lightning:input name="practiceName" aura:id="nameId" label="Practice Name" 
+                                     value="{!v.searchName}"
+                                     pattern="^[a-zA-Z)(\-0-9_.s,/ ]*$"
+                                     messageWhenPatternMismatch="Invalid Practice Name"/>           
+                </div>
+                
+                
+                <div class="slds-form-element__control slds-size--1-of-4">
+                    
+                    <lightning:buttonIcon name="searchIcon" aura:id="searchIconId"
+                                          iconName="utility:search" 
+                                          variant="bare" alternativeText="Settings" 
+                                          class="paddingUP"
+                                          iconClass="dark"
+                                          onclick="{! c.searchAccountJS }"/>
+
+                </div>
+            </div>
+            
+        </div>
+        
+        
+    </fieldset>
+    
+    
+</aura:component>

@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="HCP signer Changed" >
+    <aura:attribute type="String" name="faxNumber"/>
+</aura:event>

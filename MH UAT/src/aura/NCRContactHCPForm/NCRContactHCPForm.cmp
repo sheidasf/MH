@@ -1,0 +1,254 @@
+<aura:component controller="NCRAccountController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    
+    <!-- TODO default contact here and make rquired-->
+    <aura:attribute name="newContact" type="Contact" />
+    <aura:attribute name="permission" type="User_Permissions__c" />
+
+    <aura:attribute name="existingcontact" type="Contact[]" />  
+    <aura:attribute name="showExistingContacts" type="Boolean" default="False" />  
+    <aura:attribute name="isProspectAccount" type="Boolean" default="False" /> 
+    <aura:attribute name="act" type="Account" /> 
+
+    <aura:attribute name="isReadOnly" type="Boolean" default="False" />
+    <!-- Changed by JS ends -->
+    <aura:attribute name="role" type="String" required="true" default="Primary" />
+    <aura:attribute name="ctVarName" type="String" />
+    <aura:attribute name="ctNum" type="String" />
+    <aura:attribute name="disablePermissions" type="Boolean" default="false" />
+    <aura:attribute name="signatureRequired" type="Boolean" default="true" />
+    <aura:attribute name="isSalesforce1" type="Boolean" default="true" />
+    <aura:attribute name="permissionOptions" type="List" />
+    <aura:attribute name="disableOtherCreds" type="Boolean" default="false" />  
+    <aura:attribute name="disableHCPInfo" type="Boolean" default="true" />
+    <aura:attribute name="disableSigner" type="Boolean" default="true" />
+    <aura:attribute name="credentialsOptions" type="List" />
+    <aura:attribute name="NCRsettings" type="NCR_Setting__c" default="{'sobjectType': 'NCR_Setting__c' }"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="c:NCRDuplicateContactDetectedEvent" action="{!c.showOverrideDuplicate}"/>    
+    
+    <aura:method name="validateContact" action="{!c.validate}" description="validate the contact info">
+        <aura:attribute name="errorsParam" type="String[]" />       
+        <aura:attribute name="cont" type="Object" /> 
+    </aura:method> 
+    
+    <fieldset class="slds-box slds-form--compound slds-theme--default slds-container--medium slds-m-top--large"> 
+        <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">CONTACT/HealthCare Provider Number {!v.ctNum} </legend>
+        
+        <!-- Primary contact should be expanded, others collapsed -->
+   		<!-- <lightning:buttonIcon class="{ !v.ctNum == '1' ? 'slds-hide' : '' }"
+                              iconName="utility:chevronright" size="small" 
+                              alternativeText="add contact" onclick="{!c.showContactPanel}"/> -->
+        
+        <!-- give this element a global id so it can be hidden/shown -->        
+        <!-- div id="{!globalId + v.ctNum}" class= "{!v.ctNum == '1' ? '' : 'slds-hide' }" -->
+        
+            <div class="slds-form-element__control slds-hidden slds-size--4-of-4" aura:id="dupId">                
+                <lightning:input type="checkbox" 
+                                 label="{!$Label.c.NCR_OverrideDuplicate}" name="dupName"
+                                 value="{!v.newContact.DuplicateContactDetected__c}"
+                                 checked="{!v.newContact.DuplicateContactDetected__c}"                                 
+                                 />              
+            </div>
+        
+        
+        <!-- Added by JS -->
+        <aura:if isTrue="{!v.showExistingContacts == 'True'}">
+            <div class="slds-form-element__row"> 
+                <div class="slds-form-element__control slds-size--2-of-6">      
+                    <lightning:select name="selectItem" 
+                                      label="Select Existing Related Contacts" 
+                                      required="false"
+                                      onchange="{!c.populateContactValues}" 
+                                      >
+                        <option value="">-- None --</option> 
+                        
+                        <aura:iteration items="{!v.existingcontact}" var="exContact" indexVar="indexVar">
+                            <option value="{!exContact.Id}">{!exContact.FirstName} &nbsp; {!exContact.LastName}</option>
+                        </aura:iteration>
+                        
+                    </lightning:select>
+                </div>
+            </div>  
+        </aura:if>     
+            <!-- Changes by JS Ends-->
+            
+        <div class="slds-form-element__row"> 
+            <div class="slds-form-element__control slds-size--2-of-6">      
+                <lightning:select name="selectItem" 
+                                  label="Contact Designation" 
+                                  required="true"
+                                  onchange="{!c.designationChanged}">
+                    <option value="--None--">--None--</option>
+                    <option value="Primary">Primary</option>
+                    <option value="Secondary">Secondary</option>
+                    <option value="Additional">Additional</option>
+                </lightning:select>
+            </div>
+            <aura:if isTrue="{!v.isReadOnly}">
+                <div class="slds-form-element__control slds-size--4-of-6"> 
+                    Note:You can only update certain information about this contact since it is associated to a different account 
+                </div>
+            </aura:if> 
+            
+        </div>    
+            <div class="slds-form-element__row">                        
+                <div class="slds-form-element__control slds-size--2-of-6">             
+                    <lightning:input name="fnameName" aura:id="fnameId" label="First Name"
+                                     value="{!v.newContact.FirstName}"
+                                     messageWhenPatternMismatch="First Name can contain only letters, spaces, periods, hyphens, commas, underscores, forward slashes, backward slashes, parentheses, apostrophes and quotation marks"
+                                     pattern="[a-zA-Z .\-,_/\\\(\)']*"
+                                     
+                                     required="true"
+                                     readonly="{!v.isReadOnly}"
+                                     />
+                </div> 
+                
+                <div class="slds-form-element__control slds-size--2-of-6">
+                    <lightning:input name="mnameName" aura:id="mnameId" label="Middle Name"
+                                     pattern="[a-zA-Z .\-,_/\\\(\)']*"
+                                     messageWhenPatternMismatch="Middle Name can contain only letters, spaces, periods, hyphens, commas, underscores, forward slashes, backward slashes, parentheses, apostrophes and quotation marks"
+                                     
+                                     value="{!v.newContact.MiddleName}"
+                                     readonly="{!v.isReadOnly}"
+                                     />
+                </div>
+                
+                <div class="slds-form-element__control slds-size--2-of-6">             
+                    <lightning:input name="lnameName" aura:id="lnameId" label="Last Name"
+                                     pattern="[a-zA-Z .\-,_/\\\(\)']*"
+                                     messageWhenPatternMismatch="Last Name can contain only letters, spaces, periods, hyphens, commas, underscores, forward slashes, backward slashes, parentheses, apostrophes and quotation marks"
+                                     value="{!v.newContact.LastName}"
+                                     
+                                     maxlength="50"
+                                     required="true"
+                                     readonly="{!v.isReadOnly}"
+                                     />
+                </div>  
+            </div>
+            
+            
+            <div class="slds-form-element__row">                                       
+                <div class="slds-form-element__control slds-size--2-of-6">
+                    <lightning:input name="pnameName" aura:id="pnameId" label="Contact Preferred Name"
+                                     value="{!v.newContact.Preferred_name__c}"
+                                     readonly="{!v.isReadOnly}"/>
+                </div> 
+                
+                <div class="slds-form-element__control slds-size--2-of-6">
+                    <lightning:input name="titleName" aura:id="titleId" label="Contact Title"
+                                     value="{!v.newContact.Title}" 
+                                     
+                                     maxlength="50"
+                                     readonly="{!v.isReadOnly}"/>
+                </div> 
+                
+                <div class="slds-form-element__control slds-size--2-of-6">
+                    <lightning:input name="emailName" aura:id="emailId" label="Contact Email"
+                                     type="email" 
+                                     maxlength="50"
+                                     onblur="{!c.primaryEmailChanged}"
+                                     
+                                     value="{!v.permission.Email__c}" 
+                                     
+                                     />
+                </div>                             
+            </div>
+            <div class="slds-form-element__row">  
+                <div class="slds-form-element__control slds-size--3-of-12">                        
+                    <lightning:input type="tel" name="telName" aura:id="phoneId" label="Phone" 
+                                     value="{!v.newContact.Phone}"
+                                     pattern="\([0-9]{3}\) [0-9]{3}-[0-9]{4}|[0-9]{10}" 
+                                     messageWhenPatternMismatch="Invalid Phone Number. Phone number should be 10 digits or (###) ###-####."
+                                     readonly="{!v.isReadOnly}"
+                                     />                        
+                </div>
+                
+                
+                <div class="slds-form-element__control slds-size--3-of-12">
+                    <lightning:input type="tel" name="cellName" aura:id="cellId" label="Mobile Phone" 
+                                     value="{!v.newContact.MobilePhone}"
+                                     pattern="\([0-9]{3}\) [0-9]{3}-[0-9]{4}|[0-9]{10}" 
+                                     messageWhenPatternMismatch="Invalid Phone Number. Phone number should be 10 digits or (###) ###-####."
+                                     readonly="{!v.isReadOnly}"
+                                     />      
+                </div>  
+                <div class="slds-checkbox slds-form-element__control slds-size--2-of-12">
+                    <lightning:input type="checkbox" aura:id="onlineUserId"
+                                     label="Online user" name="onlineUserName"
+                                     class="paddingUP"
+                                     value="{!v.permission.Online_User__c}"
+                                     onchange="{!c.onlineUserChanged}" />              
+                </div>
+                
+                <div class="slds-form-element__control slds-size--4-of-12">    
+                    
+                    <lightning:select name="permissionsName" aura:id="permissionsId" label="Permissions"    
+                                      onchange="{!c.permissionsChanged}" 
+                                      disabled="{!v.disablePermissions}">
+                        <aura:iteration items="{!v.permissionOptions}" var="item">
+                            <option text="{!item.label}" value="{!item.value}" selected="{!v.permission.Online_User_Permissions__c == item.value}"/>
+                        </aura:iteration>
+                    </lightning:select>                   
+                </div>                                     
+            </div> 
+
+        
+            <fieldset class="slds-box slds-form--compound slds-m-top--medium">
+                <legend class="boldy slds-form-element__legend slds-form-element__label slds-text-title--caps">HealthCare Provider Info</legend>                
+                <div class="slds-form-element__row">  
+                    <div class="slds-form-element__control slds-size--1-of-1">
+                        <lightning:input type="checkbox" aura:id="hcpId"
+                                         label="Health Care Provider/Authorized User" name="hcpName"
+                                         value="{!v.newContact.Is_Physician__c}"                                         
+                                         onchange="{!c.hcpChanged}" 
+                                         disabled="{!v.isReadOnly}"/>              
+                    </div>
+                </div>
+                
+                <div class="slds-form-element__row">                        
+                    <div class="slds-form-element__control slds-size--2-of-6">             
+                        <lightning:select name="credName" aura:id="credId" label="Credentials"
+                                          onchange="{!c.credentialsChanged}"
+                                          disabled="{!v.disableHCPInfo || v.isReadOnly}"
+                                          required="true"
+                                          >
+                            <aura:iteration items="{!v.credentialsOptions}" var="item">
+                        <!--        <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/> -->
+                                <option text="{!item.label}" value="{!item.value}" selected="{!v.newContact.Provider_Credentials__c == item.value}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>      
+                    
+                    
+                    <div class="slds-form-element__control slds-size--2-of-6">
+                        <lightning:input name="otherCredName" aura:id="otherCredId" label="Other Credentials"
+                                         disabled="{! v.disableOtherCreds || v.disableHCPInfo || v.isReadOnly }"
+                                         value="{!v.newContact.Credentials__c}"
+                                         />
+                    </div>          
+                    
+                    <div class="slds-form-element__control slds-size--2-of-6">             
+                        <lightning:input name="NPIName" aura:id="NPIId" label="NPI (required for medical practices)"
+                                         pattern="[0-9]{10}"
+                                         messageWhenPatternMismatch="Invalid NPI Number. NPI number should be 10 digits."
+                                         disabled="{!v.disableHCPInfo || v.isReadOnly}"
+                                         value="{!v.newContact.NPI_ID__c}"
+                                         />
+                    </div>                 
+                </div> 		
+                                            
+                <div class="slds-form-element__row slds-hidden" aura:id="signCheckboxId" >
+                    <div class="slds-form-element__control slds-size--1-of-1">
+                        <lightning:input type="checkbox" aura:id="signerId"
+                                         label="Signing the acknowledgment" name="signerName"
+                                         disabled="{!v.disableSigner}"
+                                         value="{!v.permission.Signer__c}"
+                                         onchange="{!c.signerChanged}" />              
+                    </div>
+                </div>
+            </fieldset>
+        <!-- /div -->
+        
+    </fieldset>
+</aura:component>
