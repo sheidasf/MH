@@ -1,5 +1,5 @@
 <aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" >
-    <!-- comments go here  -->
+    <!-- comments goes here  -->
     <div class="slds-page-header slds-container--medium" role="banner">
         <div class="slds-grid">
             <div class="slds-col slds-has-flexi-truncate">
